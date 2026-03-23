@@ -256,7 +256,7 @@ export default function AttendancePage() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Top bar */}
-      <div className="px-6 py-3 flex items-center justify-between flex-shrink-0 gap-4"
+      <div className="px-4 md:px-6 py-3 flex flex-wrap md:flex-nowrap items-center justify-between flex-shrink-0 gap-4"
         style={{ background:'var(--background-2)', borderBottom:'1px solid var(--border)' }}>
         <div className="min-w-0">
           <h2 className="font-black text-base truncate" style={{ color:'var(--foreground)' }}>
@@ -304,7 +304,7 @@ export default function AttendancePage() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
               <LField label="Department"    value={cfg.department}   onChange={updateCfg('department')}   placeholder="Computer Engineering"/>
               <LField label="Academic Year" value={cfg.academicYear} onChange={updateCfg('academicYear')} placeholder="2025–2026"/>
               <LField label="Semester"      value={cfg.semester}     onChange={updateCfg('semester')}     placeholder="I / II"/>
@@ -320,7 +320,7 @@ export default function AttendancePage() {
       )}
 
       {/* Tab bar */}
-      <div className="px-6 flex gap-1 flex-shrink-0" style={{ background:'var(--background-2)', borderBottom:'1px solid var(--border)' }}>
+      <div className="px-4 md:px-6 flex gap-1 flex-shrink-0 overflow-x-auto no-scrollbar whitespace-nowrap" style={{ background:'var(--background-2)', borderBottom:'1px solid var(--border)' }}>
         {([
           ['dashboard',  BarChart2,      'Dashboard'],
           ['defaulters', AlertTriangle,  `Defaulters (${defaulters.length})`],
@@ -338,7 +338,7 @@ export default function AttendancePage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
 
         {/* ── DASHBOARD ─────────────────────────────────────────────────── */}
         {activeTab === 'dashboard' && (
@@ -452,8 +452,8 @@ export default function AttendancePage() {
               </div>
             </div>
 
-            <div className="card overflow-hidden fade-in-up" style={{ animationDelay:'60ms' }}>
-              <table className="w-full text-sm">
+            <div className="card overflow-x-auto fade-in-up" style={{ animationDelay:'60ms' }}>
+              <table className="w-full text-sm whitespace-nowrap md:whitespace-normal">
                 <thead>
                   <tr style={{ background:'var(--surface)', borderBottom:'1px solid var(--border)' }}>
                     {['Sr.','PRN','Name','Theory %','Practical %','Overall %','Status','Letter'].map(h => (

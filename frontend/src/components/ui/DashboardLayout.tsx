@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, Upload, ShieldCheck, LogOut,
@@ -15,14 +15,28 @@ const navItems = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  React.useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--background)' }}>
 
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)} />
+      )}
+
       {/* ── Sidebar ─────────────────────────────────────────────── */}
       <aside
-        className={`flex flex-col flex-shrink-0 transition-all duration-300 ${collapsed ? 'w-16' : 'w-58'}`}
+        className={`fixed md:relative z-50 h-full flex flex-col flex-shrink-0 transition-all duration-300 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0 ${collapsed ? 'w-16' : 'w-58'}`}
         style={{ background: 'var(--background-2)', borderRight: '1px solid var(--border)', width: collapsed ? '64px' : '228px' }}>
 
         {/* Logo */}
@@ -104,8 +118,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* ── Main ────────────────────────────────────────────────── */}
-      <main className="flex-1 overflow-auto relative" style={{ background: 'var(--background)' }}>
-        {children}
+      <main className="flex-1 flex flex-col overflow-hidden relative" style={{ background: 'var(--background)' }}>
+        {/* Mobile Header Top Bar */}
+        <div className="md:hidden flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ background: 'var(--background-2)', borderBottom: '1px solid var(--border)' }}>
+          <button onClick={() => setMobileOpen(true)} className="p-1.5 rounded-lg text-white" style={{ background: 'rgba(99,102,241,0.15)' }}>
+            <Menu size={20} />
+          </button>
+          <span className="font-black text-base tracking-tight gradient-text">ReportGen</span>
+          <div className="w-6 h-6" /> {/* spacer */}
+        </div>
+        
+        <div className="flex-1 overflow-auto">
+          {children}
+        </div>
       </main>
     </div>
   );

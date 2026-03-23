@@ -226,7 +226,7 @@ export default function UserDashboard() {
       </div>
 
       {/* History */}
-      <div className="card overflow-hidden fade-in-up">
+      <div className="card overflow-x-auto fade-in-up">
         <div
           className="px-6 py-4 flex items-center justify-between"
           style={{ borderBottom: "1px solid var(--border)" }}
@@ -303,7 +303,7 @@ export default function UserDashboard() {
           </div>
         )}
         {!fetching && !authLoading && !fetchErr && history.length > 0 && (
-          <table className="w-full text-sm">
+          <table className="w-full text-sm whitespace-nowrap md:whitespace-normal">
             <thead>
               <tr
                 style={{
