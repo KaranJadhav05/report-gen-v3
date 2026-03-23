@@ -138,20 +138,6 @@ export default function LoginPage() {
                 <LogIn size={16}/>{loading ? 'Signing in…' : 'Sign In'}
               </button>
 
-              {/* Quick fill */}
-              <div className="pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
-                <p className="text-center text-xs mb-3" style={{ color: 'var(--foreground-3)' }}>Quick fill (dev)</p>
-                <div className="flex gap-2">
-                  {[['Admin','admin@reportgen.com','admin123'],['User','user@reportgen.com','user123']].map(([label,email,pw]) => (
-                    <button key={label} type="button"
-                      onClick={() => setForm(f=>({...f,email,password:pw}))}
-                      className="flex-1 py-2 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-[1.02]"
-                      style={{ background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.2)', color:'var(--foreground-2)' }}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </form>
           )}
 

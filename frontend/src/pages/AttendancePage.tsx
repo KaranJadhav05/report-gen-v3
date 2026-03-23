@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -67,12 +68,15 @@ const DarkTooltip = ({ active, payload, label }: any) => {
 
 export default function AttendancePage() {
   const { token } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const fileRef   = useRef<HTMLInputElement>(null);
 
   const [students,  setStudents]  = useState<Student[]>([]);
   const [sheetMeta, setSheetMeta] = useState<any>(null);
   const [dragging,  setDragging]  = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [fetchingReport, setFetchingReport] = useState(false);
   const [uploadMsg, setUploadMsg] = useState('');
   const [threshold, setThreshold] = useState(75);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'defaulters' | 'letters'>('dashboard');
@@ -84,6 +88,35 @@ export default function AttendancePage() {
 
   const updateCfg = (k: keyof LetterConfig) => (v: string) => setCfg(c => ({ ...c, [k]: v }));
   const saveConfig = () => { setCfgSaved(true); setTimeout(() => setCfgSaved(false), 2000); };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (id && token && !fetchingReport && students.length === 0) {
+      setFetchingReport(true);
+      fetch(`/api/attendance/report/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => {
+        if (d.report && d.report.students) {
+          setStudents(d.report.students);
+          setSheetMeta({ sheetName: d.report.sheetName, ...d.report });
+          setCfg(c => ({ ...c, 
+            department: d.report.department || c.department,
+            academicYear: d.report.academicYear || c.academicYear,
+            semester: d.report.semester || c.semester
+          }));
+          setActiveTab('dashboard');
+        }
+      })
+      .catch(e => {
+        setUploadMsg("❌ Failed to load report from history.");
+        console.error(e);
+      })
+      .finally(() => setFetchingReport(false));
+    }
+  }, [location.search, token]);
 
   // ── Upload ──────────────────────────────────────────────────────────────
   const uploadFile = useCallback(async (file: File) => {
@@ -178,13 +211,15 @@ export default function AttendancePage() {
             boxShadow: dragging ? '0 0 40px rgba(99,102,241,0.2)' : '0 4px 24px rgba(0,0,0,0.4)',
             transform: dragging ? 'scale(1.01)' : 'scale(1)',
           }}>
-          {uploading ? (
+          {uploading || fetchingReport ? (
             <div className="flex flex-col items-center gap-4">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center pulse-glow"
                 style={{ background: 'linear-gradient(135deg,#6366f1,#06b6d4)' }}>
                 <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"/>
               </div>
-              <p className="font-bold" style={{ color: 'var(--primary)' }}>Processing file…</p>
+              <p className="font-bold" style={{ color: 'var(--primary)' }}>
+                {fetchingReport ? 'Loading report from history…' : 'Processing file…'}
+              </p>
             </div>
           ) : (
             <>
@@ -238,7 +273,7 @@ export default function AttendancePage() {
               : { background:'var(--surface)', color:'var(--foreground-2)', border:'1px solid var(--border)' }}>
             <Settings2 size={13}/> Letter Settings
           </button>
-          <button onClick={() => { setStudents([]); setSheetMeta(null); setUploadMsg(''); }}
+          <button onClick={() => { setStudents([]); setSheetMeta(null); setUploadMsg(''); navigate('/attendance', { replace: true }); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-[1.02]"
             style={{ background:'var(--surface)', color:'var(--foreground-2)', border:'1px solid var(--border)' }}>
             <Upload size={13}/> New Upload

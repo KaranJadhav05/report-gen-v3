@@ -9,7 +9,7 @@ import {
 const navItems = [
   { to: '/attendance',      icon: Upload,          label: 'Attendance Tool' },
   { to: '/user-dashboard',  icon: LayoutDashboard, label: 'My Dashboard'    },
-  { to: '/admin-dashboard', icon: ShieldCheck,     label: 'Admin Panel', adminOnly: true },
+  { to: '/admin-dashboard', icon: ShieldCheck,     label: 'Admin Panel', adminOnly: false },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
