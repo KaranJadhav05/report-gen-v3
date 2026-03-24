@@ -1,12 +1,12 @@
 {
-  "routes": [
+  "rewrites": [
     {
-      "src": "^/api/(.*)",
-      "dest": "https://report-gen-v3.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://report-gen-v3.onrender.com/api/:path*"
     },
     {
-      "src": "/(.*)",
-      "dest": "/"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
